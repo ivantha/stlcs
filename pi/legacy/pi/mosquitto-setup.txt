@@ -1,0 +1,75 @@
+SSH into your Raspberry Pi. Now, you need to add the Mosquitto repository. Enter the following commands:
+sudo wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+sudo apt-key add mosquitto-repo.gpg.key
+sudo rm mosquitto-repo.gpg.key
+Next, make the repository available to apt-get. First we need to change to the apt sources list directory:
+cd /etc/apt/sources.list.d/
+Now install the packages list for your Raspbian.
+sudo wget http://repo.mosquitto.org/debian/mosquitto-jessie.list
+Now update apt information and install Mosquitto.
+sudo apt-get update
+sudo apt-get install mosquitto mosquitto
+Next we can install the three parts of Mosquitto proper.
+mosquitto – the MQTT broker (or in other words, a server)
+mosquitto-clients – command line clients, very useful in debugging
+python-mosquitto – the Python language bindings
+sudo apt-get install mosquitto mosquitto-clients python-mosquitto
+Now the broker is immediately started.  Since we have to configure it first, stop it by command:
+sudo /etc/init.d/mosquitto stop
+We need to set up the configuration file. The configuration files is located at /etc/mosquitto. Open the config file:
+sudo nano /etc/mosquitto/mosquitto.conf
+ 
+File should look like this:
+
+# Place your local configuration in /etc/mosquitto/conf.d/
+#
+# A full description of the configuration file is at
+# /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+pid_file /var/run/mosquitto.pid
+persistence true
+persistence_location /var/lib/mosquitto/
+log_dest file /var/log/mosquitto/mosquitto.log
+include_dir /etc/mosquitto/conf.d
+Now replace “log_dest file /v…” line with “log_dest topic”. And add following 6 lines:
+
+log_type error
+log_type warning
+log_type notice
+log_type information
+connection_messages true
+log_timestamp true
+Now the file should look like this:
+
+# Place your local configuration in /etc/mosquitto/conf.d/
+#
+# A full description of the configuration file is at
+# /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+pid_file /var/run/mosquitto.pid
+persistence true
+persistence_location /var/lib/mosquitto/
+log_dest topic
+log_type error
+log_type warning
+log_type notice
+log_type information
+connection_messages true
+log_timestamp true
+include_dir /etc/mosquitto/conf.d
+Start the mosquito server:
+sudo /etc/init.d/mosquitto start
+Test your installation by opening 2 two terminal windows to the first insert:
+mosquitto_sub -d -t hello/world
+ 
+And to the second window insert:
+mosquitto_pub -d -t hello/world -m "Hello from Terminal window 2!"
+ 
+When you have done the second statement you should see this in the Terminal 1 window:
+~ $ sudo mosquitto_sub -d -t hello/world
+Client mosqsub/3014-LightSwarm sending CONNECT
+Client mosqsub/3014-LightSwarm received CONNACK
+Client mosqsub/3014-LightSwarm sending SUBSCRIBE (Mid: 1, Topic: hello/world, QoS: 0)
+Client mosqsub/3014-LightSwarm received SUBACK
+Subscribed (mid: 1): 0
+Client mosqsub/3014-LightSwarm received PUBLISH (d0, q0, r0, m0, 'hello/world', ... (32 bytes))
+Greetings from Terminal window 2
+On Linux version 4.4.50/ Raspbian v. 8 (jessie) and mosquitto MQTT v3.1 the mosquitto will start on boot automatically.

@@ -1,0 +1,22 @@
+{
+  "name": "stls-server",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src -d dist",
+    "serve": "node dist/index.js",
+    "dev": "npm run build && nodemon dist/server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "core-js": "^2.6.3",
+    "express": "^4.16.4",
+    "mqtt": "^2.18.8",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "nodemon": "^1.18.9"
+  }
+}
